@@ -12,7 +12,7 @@ import Foundation
  
 /* For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
-public class Results {
+public class User {
 	public var gender : String?
 	public var name : Name?
 	public var location : Location?
@@ -36,12 +36,12 @@ public class Results {
 
     - returns: Array of Results Instances.
 */
-    public class func modelsFromDictionaryArray(array:NSArray) -> [Results]
+    public class func modelsFromDictionaryArray(array:NSArray) -> [User]
     {
-        var models:[Results] = []
+        var models:[User] = []
         for item in array
         {
-            models.append(Results(dictionary: item as! NSDictionary)!)
+            models.append(User(dictionary: item as! NSDictionary)!)
         }
         return models
     }

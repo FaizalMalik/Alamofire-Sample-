@@ -13,10 +13,10 @@ class UsersApiManager {
     
     static let sharedInstance =  UsersApiManager()
 
-    func getUsersList( headers:Dictionary<String, String>? ,url:String, success: @escaping(_ json : Any, _ statusCode:Int )->() , failure:@escaping(_ error : NSError )->() )  {
+    func getUsersList( url:String, success: @escaping(_ json : Any, _ statusCode:Int )->() , failure:@escaping(_ error : NSError )->() )  {
         
         
-        Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).responseJSON { (response) in
+        Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             
             // let dataR:NSArray=response.data
             
@@ -24,19 +24,25 @@ class UsersApiManager {
                 
             case .success(let dataR):
                 
-                let json:NSDictionary=dataR as! NSDictionary;
        
                 if response.response?.statusCode == 200 {
+                    if let json:NSDictionary=dataR as? NSDictionary {
+                        
+                        if let usersList = UsersList.init(dictionary: json){
+                              success(usersList, (response.response?.statusCode)!)
+                        }
+                        
+                    }
                     
-                    
-                    success([], (response.response?.statusCode)!)
-                    
+                 
+
                 }
-               
                 else{
-                    success(json, (response.response?.statusCode)!)
-                    
+                    success([], (response.response?.statusCode)!)
                 }
+                
+               
+                
                 break
                 
                 

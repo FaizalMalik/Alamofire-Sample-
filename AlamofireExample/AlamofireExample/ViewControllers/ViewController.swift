@@ -11,11 +11,14 @@ import SVProgressHUD
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableViewHome: UITableView!
+    var usersArray:[User]? = []
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        fetchData()
     }
     
     
@@ -23,17 +26,49 @@ class HomeViewController: UIViewController {
     func fetchData(){
         SVProgressHUD.show(withStatus: "Fetching..")
         
+        UsersApiManager.sharedInstance.getUsersList( url: "https://randomuser.me/api/?seed=$0&page=$0&results=20", success: { (data, code) in
+        
+            SVProgressHUD.dismiss(withDelay: 0.2)
+            
+
+            guard code == 200 else {
+                
+                return
+            }
+            
+            if let response = data as? UsersList {
+                self.usersArray = response.results
+                
+            }
+          
+            self.tableViewHome.reloadData()
+            
+        }) { (error) in
+            
+            SVProgressHUD.dismiss(withDelay: 1)
+            
+            
+        }
+        
     }
 }
+
 //MARK: UITableViewDataSource Methods
 extension HomeViewController : UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return (self.usersArray?.count)!
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return tableView.dequeueReusableCell(withIdentifier: "ListTableViewcell") as! ListTableViewcell
         
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ListTableViewcell") as! ListTableViewcell
+        let user = usersArray![indexPath.row]
+        
+         cell.lblName.text = (user.name?.first)! + " " +  (user.name?.last)!
+         cell.lblEmail.text = user.email
+        cell.imgUser.imageFromServerURL((user.picture?.thumbnail)!,placeHolder: UIImage(named: "placeholder"))
+        return cell
     }
     
     

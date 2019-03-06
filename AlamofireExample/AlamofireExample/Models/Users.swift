@@ -12,8 +12,8 @@ import Foundation
  
 /* For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
-public class Users {
-	public var results : Array<Results>?
+public class UsersList {
+	public var results : Array<User>?
 	public var info : Info?
 
 /**
@@ -26,12 +26,12 @@ public class Users {
 
     - returns: Array of Json4Swift_Base Instances.
 */
-    public class func modelsFromDictionaryArray(array:NSArray) -> [Users]
+    public class func modelsFromDictionaryArray(array:NSArray) -> [UsersList]
     {
-        var models:[Users] = []
+        var models:[UsersList] = []
         for item in array
         {
-            models.append(Users(dictionary: item as! NSDictionary)!)
+            models.append(UsersList(dictionary: item as! NSDictionary)!)
         }
         return models
     }
@@ -48,7 +48,7 @@ public class Users {
 */
 	required public init?(dictionary: NSDictionary) {
 
-        if (dictionary["results"] != nil) { results = Results.modelsFromDictionaryArray(array: dictionary["results"] as! NSArray) }
+        if (dictionary["results"] != nil) { results = User.modelsFromDictionaryArray(array: dictionary["results"] as! NSArray) }
 		if (dictionary["info"] != nil) { info = Info(dictionary: dictionary["info"] as! NSDictionary) }
 	}
 
