@@ -16,11 +16,13 @@ class HomeViewController: UIViewController {
     
     let refreshControl = UIRefreshControl()
     var isFiltered = false
-    
+    var page = 0
+    var isPaginationCall = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        fetchData()
+        fetchData(forPage: page)
         setupView()
     }
     
@@ -32,7 +34,7 @@ class HomeViewController: UIViewController {
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         tableViewHome.addSubview(refreshControl)
-        
+        tableViewHome.delegate = self
         //Set Search bar Header
         
         let searchBar = UISearchBar()
@@ -49,19 +51,38 @@ class HomeViewController: UIViewController {
     @objc func refresh(sender:AnyObject) {
         
      
-       
-            fetchData()
+       page = 0
+        fetchData(forPage: page)
        
         
     }
     
-    
-    
+    //MARK: Pagination Methods
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+      
+
+        for cell:UITableViewCell in tableViewHome.visibleCells {
+            
+            if let indexPath:IndexPath = tableViewHome.indexPath(for: cell) {
+                
+                //If we have total number of results , add the condition below
+                if indexPath.row + 1 == usersArray?.count && !isPaginationCall {
+                    isPaginationCall = true
+                    page = page + 1
+                    fetchData(forPage: page)
+                }
+                
+            }
+            
+        }
+        
+    }
     //MARK: Other Methods
-    func fetchData(){
+    func fetchData(forPage page: Int){
         SVProgressHUD.show(withStatus: "Fetching..")
         
-        UsersApiManager.sharedInstance.getUsersList( url: "https://randomuser.me/api/?seed=$0&page=$0&results=20", success: { (data, code) in
+        UsersApiManager.sharedInstance.getUsersList( url: "?seed=$0&page=$\(page)&results=20", success: { (data, code) in
         
             SVProgressHUD.dismiss(withDelay: 0.2)
             
@@ -72,7 +93,17 @@ class HomeViewController: UIViewController {
             }
             
             if let response = data as? UsersList {
-                self.usersArray = response.results
+                
+                
+                if self.isPaginationCall {
+                    self.usersArray = self.usersArray! + response.results!
+                    self.isPaginationCall = false
+                }
+                else{
+                    self.usersArray = response.results
+
+                }
+                
                 
             }
           
@@ -90,7 +121,7 @@ class HomeViewController: UIViewController {
 }
 
 //MARK: UITableViewDataSource Methods
-extension HomeViewController : UITableViewDataSource{
+extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return isFiltered ?  (self.filterdusersArray?.count)! : (self.usersArray?.count)!
     }

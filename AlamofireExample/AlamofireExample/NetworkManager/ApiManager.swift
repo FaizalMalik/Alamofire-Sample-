@@ -15,8 +15,9 @@ class UsersApiManager {
 
     func getUsersList( url:String, success: @escaping(_ json : Any, _ statusCode:Int )->() , failure:@escaping(_ error : NSError )->() )  {
         
+        let apiUrl = Constants.BASEURL + url
         
-        Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+        Alamofire.request(apiUrl, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             
             // let dataR:NSArray=response.data
             
