@@ -49,11 +49,8 @@ class HomeViewController: UIViewController {
     
     
     @objc func refresh(sender:AnyObject) {
-        
-     
        page = 0
         fetchData(forPage: page)
-       
         
     }
     
@@ -82,7 +79,7 @@ class HomeViewController: UIViewController {
     func fetchData(forPage page: Int){
         SVProgressHUD.show(withStatus: "Fetching..")
         
-        UsersApiManager.sharedInstance.getUsersList( url: "?seed=$0&page=$\(page)&results=20", success: { (data, code) in
+        UsersApiManager.sharedInstance.getUsersList( url: "?seed=$\(page)&page=$\(page)&results=20", success: { (data, code) in
         
             SVProgressHUD.dismiss(withDelay: 0.2)
             
@@ -94,16 +91,19 @@ class HomeViewController: UIViewController {
             
             if let response = data as? UsersList {
                 
-                
-                if self.isPaginationCall {
-                    self.usersArray = self.usersArray! + response.results!
-                    self.isPaginationCall = false
+                if let usersList = response.results {
+                    if self.isPaginationCall {
+                        self.usersArray = self.usersArray! + usersList
+                        self.isPaginationCall = false
+                    }
+                    else{
+                        self.usersArray = usersList
+                        
+                    }
+                    
                 }
-                else{
-                    self.usersArray = response.results
-
-                }
                 
+              
                 
             }
           
@@ -112,7 +112,7 @@ class HomeViewController: UIViewController {
         }) { (error) in
             
             SVProgressHUD.dismiss(withDelay: 1)
-            
+            self.isPaginationCall = false
             
         }
         
