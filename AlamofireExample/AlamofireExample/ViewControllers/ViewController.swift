@@ -28,8 +28,8 @@ class HomeViewController: UIViewController {
         //Here we set the View related Codes
         
         //Set Refresh controller
-        refreshControl.tintColor = UIColor.clear
-        refreshControl.attributedTitle = NSAttributedString(string: "")
+        refreshControl.tintColor = UIColor.gray
+        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         tableViewHome.addSubview(refreshControl)
         
@@ -48,7 +48,7 @@ class HomeViewController: UIViewController {
     
     @objc func refresh(sender:AnyObject) {
         
-      refreshControl.endRefreshing()
+     
        
             fetchData()
        
@@ -65,7 +65,7 @@ class HomeViewController: UIViewController {
         
             SVProgressHUD.dismiss(withDelay: 0.2)
             
-
+            self.refreshControl.endRefreshing()
             guard code == 200 else {
                 
                 return
